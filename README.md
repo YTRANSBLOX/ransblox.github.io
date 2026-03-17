@@ -1,0 +1,1 @@
+# Welcome to Ransblox!\n\nWelcome to our GitHub Pages site! Here you'll find all the information and updates related to the Ransblox project. Feel free to explore, and if you have any questions, reach out to us!\n\n## Get Started\n\n- Visit the [project documentation](link-to-documentation) for detailed information.\n- Check out the latest updates in our repository.
