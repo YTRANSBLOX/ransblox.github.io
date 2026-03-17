@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RANSBLOX</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --metal-1: #0a0a0f;
+    --metal-2: #111118;
+    --metal-3: #1a1a24;
+    --steel: #2a2a3a;
+    --chrome: #4a4a6a;
+    --accent: #00d4ff;
+    --accent2: #ff4444;
+    --text: #c8c8e8;
+    --text-dim: #6a6a8a;
+    --glow: 0 0 20px rgba(0,212,255,0.4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--metal-1);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridMove 20s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes gridMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(40px); }
+  }
+
+  /* Noise texture overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(180deg, rgba(10,10,15,0.95) 0%, transparent 100%);
+    border-bottom: 1px solid rgba(0,212,255,0.1);
+  }
+
+  .nav-logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.4rem;
+    color: var(--accent);
+    text-shadow: var(--glow);
+    letter-spacing: 4px;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.2s, text-shadow 0.2s;
+  }
+
+  .nav-links a:hover {
+    color: var(--accent);
+    text-shadow: var(--glow);
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 100px 20px 60px;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--accent);
+    font-size: 0.65rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    background: rgba(0,212,255,0.05);
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: clamp(3rem, 12vw, 8rem);
+    line-height: 0.9;
+    letter-spacing: -2px;
+    animation: fadeDown 0.8s 0.1s ease both;
+    position: relative;
+  }
+
+  .hero-title .line1 {
+    display: block;
+    background: linear-gradient(135deg, #ffffff 0%, #c8c8e8 40%, #4a4a6a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-title .line2 {
+    display: block;
+    color: var(--accent);
+    text-shadow: var(--glow), 0 0 60px rgba(0,212,255,0.3);
+    -webkit-text-fill-color: var(--accent);
+  }
+
+  .hero-sub {
+    margin-top: 24px;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    max-width: 400px;
+    line-height: 1.8;
+    animation: fadeDown 0.8s 0.2s ease both;
+  }
+
+  .hero-cta {
+    margin-top: 48px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeDown 0.8s 0.3s ease both;
+  }
+
+  .btn-primary {
+    padding: 14px 36px;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgba(0,212,255,0.6);
+  }
+
+  .btn-secondary {
+    padding: 14px 36px;
+    background: transparent;
+    color: var(--text);
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--steel);
+    cursor: pointer;
+    transition: border-color 0.3s, color 0.3s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Decorative line */
+  .hero-line {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dim);
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    animation: fadeDown 1s 0.5s ease both;
+  }
+
+  .hero-line::after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(180deg, var(--accent), transparent);
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    border-top: 1px solid rgba(0,212,255,0.1);
+    border-bottom: 1px solid rgba(0,212,255,0.1);
+    background: rgba(0,212,255,0.02);
+    overflow: hidden;
+  }
+
+  .stat-item {
+    flex: 1;
+    max-width: 200px;
+    padding: 28px 20px;
+    text-align: center;
+    border-right: 1px solid rgba(0,212,255,0.08);
+    position: relative;
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-value {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.8rem;
+    color: var(--accent);
+    text-shadow: var(--glow);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-top: 4px;
+    display: block;
+  }
+
+  /* SCRIPTS SECTION */
+  .section {
+    position: relative;
+    z-index: 1;
+    padding: 80px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .section-tag {
+    font-size: 0.6rem;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 4px 12px;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    background: linear-gradient(135deg, #fff 0%, var(--chrome) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0,212,255,0.2), transparent);
+  }
+
+  /* Script cards */
+  .scripts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2px;
+  }
+
+  .script-card {
+    background: var(--metal-2);
+    border: 1px solid var(--steel);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    cursor: pointer;
+  }
+
+  .script-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 0;
+    background: var(--accent);
+    transition: height 0.3s;
+  }
+
+  .script-card:hover {
+    border-color: rgba(0,212,255,0.3);
+    transform: translateY(-2px);
+  }
+
+  .script-card:hover::before {
+    height: 100%;
+  }
+
+  .script-card-tag {
+    font-size: 0.55rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .script-card-tag::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  .script-card-name {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+
+  .script-card-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  .script-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .script-card-copy {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 6px 14px;
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    transition: background 0.2s;
+  }
+
+  .script-card-copy:hover {
+    background: rgba(0,212,255,0.1);
+  }
+
+  .script-card-status {
+    font-size: 0.55rem;
+    letter-spacing: 2px;
+    color: #00ff88;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .script-card-status::before {
+    content: '';
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    background: #00ff88;
+    border-radius: 50%;
+    animation: blink 1.5s ease infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  /* Loadstring box */
+  .loadstring-box {
+    background: var(--metal-1);
+    border: 1px solid var(--steel);
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    word-break: break-all;
+    line-height: 1.6;
+    margin-top: 12px;
+    display: none;
+    position: relative;
+  }
+
+  .loadstring-box.visible { display: block; }
+
+  .loadstring-box span { color: var(--accent); }
+
+  /* COMING SOON placeholder */
+  .script-card.coming-soon {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .coming-soon-badge {
+    position: absolute;
+    top: 16px; right: 16px;
+    font-size: 0.55rem;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    border: 1px solid var(--steel);
+    padding: 3px 8px;
+    text-transform: uppercase;
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid rgba(0,212,255,0.08);
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: gap;
+  }
+
+  .footer-logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1rem;
+    color: var(--accent);
+    letter-spacing: 4px;
+  }
+
+  .footer-text {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  /* Scan line effect */
+  .scanline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.3), transparent);
+    animation: scan 4s linear infinite;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  @keyframes scan {
+    0% { top: 0; }
+    100% { top: 100vh; }
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .section { padding: 60px 20px; }
+    .stats-bar { flex-wrap: wrap; }
+    .stat-item { min-width: 50%; border-bottom: 1px solid rgba(0,212,255,0.08); }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">RANSBLOX</a>
+  <ul class="nav-links">
+    <li><a href="#scripts">Scripts</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="https://github.com/YTRANSBLOX" target="_blank">GitHub</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">// Roblox Script Hub //</div>
+  <h1 class="hero-title">
+    <span class="line1">RANS</span>
+    <span class="line2">BLOX</span>
+  </h1>
+  <p class="hero-sub">Premium Roblox automation scripts. Free. Open source. Always updated.</p>
+  <div class="hero-cta">
+    <a href="#scripts" class="btn-primary">Browse Scripts</a>
+    <a href="https://github.com/YTRANSBLOX" target="_blank" class="btn-secondary">GitHub</a>
+  </div>
+  <div class="hero-line">SCROLL</div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-value" id="scriptCount">0</span>
+    <span class="stat-label">Scripts</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-value">FREE</span>
+    <span class="stat-label">Always</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-value">24/7</span>
+    <span class="stat-label">Updated</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-value">DELTA</span>
+    <span class="stat-label">Supported</span>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<section class="section" id="scripts">
+  <div class="section-header">
+    <span class="section-tag">Scripts</span>
+    <h2 class="section-title">Available Scripts</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="scripts-grid" id="scriptsGrid">
+
+    <!-- SCRIPT CARD 1 - RANSBLOX 3008 -->
+    <div class="script-card">
+      <div class="script-card-tag">Auto Farm</div>
+      <div class="script-card-name">RANSBLOX 3008</div>
+      <div class="script-card-desc">Automated survival script for 3008. Auto consume items, waypoint movement, and inventory management.</div>
+      <div class="script-card-footer">
+        <button class="script-card-copy" onclick="copyScript(this, 'ransblox3008')">COPY LOADSTRING</button>
+        <span class="script-card-status">Working</span>
+      </div>
+      <div class="loadstring-box" id="ransblox3008">
+        <span>loadstring</span>(game:HttpGet(<span>"https://raw.githubusercontent.com/YTRANSBLOX/RANSBLOX-SCRIPT/refs/heads/main/SIMPLESPY.lua"</span>))()
+      </div>
+    </div>
+
+    <!-- SCRIPT CARD 2 - COMING SOON -->
+    <div class="script-card coming-soon">
+      <span class="coming-soon-badge">Soon</span>
+      <div class="script-card-tag">Auto Farm</div>
+      <div class="script-card-name">SCRIPT 2</div>
+      <div class="script-card-desc">Coming soon. Stay tuned.</div>
+      <div class="script-card-footer">
+        <button class="script-card-copy">COPY LOADSTRING</button>
+        <span class="script-card-status">Soon</span>
+      </div>
+    </div>
+
+    <!-- SCRIPT CARD 3 - COMING SOON -->
+    <div class="script-card coming-soon">
+      <span class="coming-soon-badge">Soon</span>
+      <div class="script-card-tag">Utility</div>
+      <div class="script-card-name">SCRIPT 3</div>
+      <div class="script-card-desc">Coming soon. Stay tuned.</div>
+      <div class="script-card-footer">
+        <button class="script-card-copy">COPY LOADSTRING</button>
+        <span class="script-card-status">Soon</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">RANSBLOX</div>
+  <div class="footer-text">© 2026 RANSBLOX — FOR EDUCATIONAL PURPOSES ONLY</div>
+  <div class="footer-text"><a href="https://github.com/YTRANSBLOX" style="color:var(--accent);text-decoration:none;">GITHUB ↗</a></div>
+</footer>
+
+<script>
+  // Count scripts
+  const activeCards = document.querySelectorAll('.script-card:not(.coming-soon)').length;
+  const counter = document.getElementById('scriptCount');
+  let count = 0;
+  const interval = setInterval(() => {
+    count++;
+    counter.textContent = count;
+    if (count >= activeCards) clearInterval(interval);
+  }, 200);
+
+  // Copy loadstring
+  function copyScript(btn, id) {
+    const box = document.getElementById(id);
+    box.classList.toggle('visible');
+
+    // Get text content
+    const text = box.innerText.trim();
+    navigator.clipboard.writeText(text).then(() => {
+      const original = btn.textContent;
+      btn.textContent = 'COPIED!';
+      setTimeout(() => btn.textContent = original, 1500);
+    }).catch(() => {
+      btn.textContent = 'TAP TO COPY';
+    });
+  }
+
+  // Scroll reveal
+  const cards = document.querySelectorAll('.script-card:not(.coming-soon)');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }, i * 100);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  cards.forEach(card => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease, border-color 0.3s';
+    observer.observe(card);
+  });
+</script>
+</body>
+</html>
